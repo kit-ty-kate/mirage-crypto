@@ -46,7 +46,12 @@ let () =
     | _ -> [ "-Werror" ]
   in
   let optimization = match arch, os with
-    | `arm64, `macos -> "-O0" (* macOS instcombine miscompilation with clang 14.0.3 *)
+    | `arm64, `macos ->
+      let res = Configurator.V1.Process.run c "cc" ["-dumpversion"] in
+      if res.stdout = "14.0.3" then
+        "-O0" (* macOS instcombine miscompilation with clang 14.0.3 *)
+      else
+        "-O3"
     | _ -> "-O3"
   in
   let flags = optimization :: std_flags @ ent_flags in
