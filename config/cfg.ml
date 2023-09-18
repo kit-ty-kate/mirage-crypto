@@ -48,7 +48,7 @@ let () =
   let optimization = match arch, os with
     | `arm64, `macos ->
       let res = Configurator.V1.Process.run c "cc" ["-dumpversion"] in
-      if res.stdout = "14.0.3" then
+      if String.trim res.stdout = "14.0.3" then
         "-O0" (* macOS instcombine miscompilation with clang 14.0.3 *)
       else
         "-O3"
