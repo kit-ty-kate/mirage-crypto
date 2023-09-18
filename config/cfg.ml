@@ -49,12 +49,12 @@ let () =
     | `arm64, `macos ->
       let res = Configurator.V1.Process.run c "cc" ["-dumpversion"] in
       if String.trim res.stdout = "14.0.3" then
-        "-O0" (* macOS instcombine miscompilation with clang 14.0.3 *)
+        ["-O3"; "-mllvm"; "--instcombine-max-iterations=0"] (* macOS instcombine miscompilation with clang 14.0.3 *)
       else
-        "-O3"
-    | _ -> "-O3"
+        ["-O3"]
+    | _ -> ["-O3"]
   in
-  let flags = optimization :: std_flags @ ent_flags in
+  let flags = optimization @ std_flags @ ent_flags in
   let opt_flags = flags @ accelerate_flags in
   Configurator.V1.Flags.write_sexp "cflags_optimized.sexp" opt_flags;
   Configurator.V1.Flags.write_sexp "cflags.sexp" flags;
